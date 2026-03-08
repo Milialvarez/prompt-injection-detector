@@ -38,7 +38,9 @@ input_size = 384
 
 model = PromptClassifier(input_size)
 
-model.load_state_dict(torch.load("prompt_classifier.pt"))
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "prompt_classifier.pt")
+
+model.load_state_dict(torch.load(MODEL_PATH))
 
 model.eval()
 

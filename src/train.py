@@ -138,6 +138,6 @@ print("Test Accuracy:", accuracy.item())
 # SAVE TRAINED MODEL
 # Saving the model allows us to load it later for inference or deployment.
 
-torch.save(model.state_dict(), "prompt_classifier.pt")
+torch.save(model.state_dict(), "models/prompt_classifier.pt")
 
 print("Model saved as prompt_classifier.pt")
