@@ -22,7 +22,6 @@ def load_attacks(folder):
 
     return prompts
 
-
 def run_simulation():
 
     attack_prompts = load_attacks("attacks")
@@ -32,15 +31,11 @@ def run_simulation():
     detected = 0
     bypassed = 0
 
-    print("\nRunning attack simulation...\n")
-
     for prompt in attack_prompts:
 
         score, decision = analyze_prompt(prompt)
 
-        print("Prompt:", prompt)
-        print("Score:", round(score,2), "| Decision:", decision)
-        print("-"*50)
+        print(f"{score:.3f} -> {decision} | {prompt}")
 
         if decision in ["BLOCK", "FLAG"]:
             detected += 1
@@ -57,6 +52,6 @@ def run_simulation():
 
     print("Detection rate:", round(detection_rate, 2))
 
-
 if __name__ == "__main__":
+
     run_simulation()

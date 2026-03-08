@@ -46,10 +46,10 @@ model.eval()
 
 def apply_policy(score):
 
-    if score > 0.75:
+    if score > 0.65:
         return "BLOCK"
 
-    elif score > 0.55:
+    elif score > 0.50:
         return "FLAG"
 
     return "ALLOW"
