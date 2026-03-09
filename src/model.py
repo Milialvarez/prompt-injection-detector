@@ -14,10 +14,6 @@ class PromptClassifierMulticlass(nn.Module):
 
         # Second layer outputs raw scores (logits) for EACH class
         self.fc2 = nn.Linear(128, num_classes)
-        
-        # NOTA: Eliminamos el Sigmoid. 
-        # Para multiclase, la función de pérdida (CrossEntropyLoss) 
-        # espera los valores crudos y aplica Softmax internamente.
 
     def forward(self, x):
         x = self.fc1(x)
