@@ -63,7 +63,6 @@ def run_simulation():
         score, decision, attack_type = analyze_prompt(mutated_prompt)
         
         status = "🔴 BYPASSED" if decision == "ALLOW" else f"🟢 DETECTED ({attack_type})"
-        print(f"[{status}] Score: {score:.2f} | Prompt: {mutated_prompt[:60]}...")
 
         if decision in ["BLOCK", "FLAG"]:
             detected += 1
