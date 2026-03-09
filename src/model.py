@@ -1,28 +1,26 @@
 import torch
 import torch.nn as nn
 
-class PromptClassifier(nn.Module):
+class PromptClassifierMulticlass(nn.Module):
 
-    def __init__(self, vocab_size, embed_dim):
-        super().__init__()
+    def __init__(self, input_size, num_classes):
+        super(PromptClassifierMulticlass, self).__init__()
 
-        # converts text into numeric vectors to understand semantic relations
-        self.embedding = nn.Embedding(vocab_size, embed_dim)
+        # First linear layer transforms embedding space
+        self.fc1 = nn.Linear(input_size, 128)
 
-        # determinates the probability of the attack
-        self.fc = nn.Linear(embed_dim, 1)
+        # ReLU activation introduces non-linearity
+        self.relu = nn.ReLU()
 
-        # converts the output in a number between 0 and 1, so 0,1 = safe, 0,9 = most probably malicious
-        self.sigmoid = nn.Sigmoid()
+        # Second layer outputs raw scores (logits) for EACH class
+        self.fc2 = nn.Linear(128, num_classes)
+        
+        # NOTA: Eliminamos el Sigmoid. 
+        # Para multiclase, la función de pérdida (CrossEntropyLoss) 
+        # espera los valores crudos y aplica Softmax internamente.
 
     def forward(self, x):
-
-        embeds = self.embedding(x)
-
-        pooled = embeds.mean(dim=1)
-
-        out = self.fc(pooled)
-
-        out = self.sigmoid(out)
-
-        return out
+        x = self.fc1(x)
+        x = self.relu(x)
+        x = self.fc2(x)
+        return x
