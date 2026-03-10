@@ -44,7 +44,7 @@ def main():
     
     print("Iniciando el horno (entrenamiento)...")
     
-    codigo_salida = os.system("python train.py") 
+    codigo_salida = os.system("python src/train.py") 
     
     if codigo_salida != 0:
         print(" Hubo un error durante el entrenamiento. Abortando.")
