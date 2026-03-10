@@ -14,12 +14,12 @@ def init_connection():
 supabase: Client = init_connection()
 
 st.sidebar.title("Navegación")
-modo = st.sidebar.radio("Selecciona la vista:", ["🛡️ Firewall Público", "🔐 Panel de Admin"])
+modo = st.sidebar.radio("Selecciona la vista:", ["Firewall Público", "Panel de Admin"])
 
 # ==========================================
 # Public firewall for normal users
 # ==========================================
-if modo == "🛡️ Firewall Público":
+if modo == "Firewall Público":
     st.title("🛡️ LLM Security Firewall")
     st.markdown("Escribe un prompt abajo y nuestra IA analizará en tiempo real si es seguro o si intenta vulnerar el sistema.")
     st.divider()
