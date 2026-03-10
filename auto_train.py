@@ -12,7 +12,7 @@ if not url or not key:
 supabase: Client = create_client(url, key)
 
 def fetch_new_data():
-    print(" Buscando nuevos prompts validados y sin entrenar...")
+    print("Buscando nuevos prompts validados y sin entrenar...")
     response = supabase.table("prompt_logs")\
         .select("*")\
         .eq("is_reviewed", True)\
@@ -33,10 +33,22 @@ def main():
     df_nuevos = df_nuevos[["id", "prompt_text", "human_label"]].copy()
     df_nuevos = df_nuevos.rename(columns={"prompt_text": "prompt", "human_label": "category"})
     
+    LABEL_MAP = {
+        "safe": 0,
+        "data_exfiltration": 1,
+        "jailbreak": 2,
+        "obfuscation": 3,
+        "prompt_injection": 4
+    }
+    
+    df_nuevos["label"] = df_nuevos["category"].map(LABEL_MAP)
+    
+    df_nuevos = df_nuevos.dropna(subset=["label"])
+    df_nuevos["label"] = df_nuevos["label"].astype(int) 
     ruta_dataset = "dataset/prompts_multiclass.csv" 
     df_old = pd.read_csv(ruta_dataset)
     
-    df_combined = pd.concat([df_old, df_nuevos[["prompt", "category"]]], ignore_index=True)
+    df_combined = pd.concat([df_old, df_nuevos[["prompt", "label", "category"]]], ignore_index=True)
     df_combined = df_combined.drop_duplicates(subset=["prompt"])
     
     df_combined.to_csv(ruta_dataset, index=False)
@@ -47,7 +59,7 @@ def main():
     codigo_salida = os.system("python src/train.py") 
     
     if codigo_salida != 0:
-        print(" Hubo un error durante el entrenamiento. Abortando.")
+        print("Hubo un error durante el entrenamiento. Abortando.")
         exit(1)
     
     print("Entrenamiento exitoso. Marcando registros en Supabase...")
