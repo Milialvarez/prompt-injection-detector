@@ -1,0 +1,29 @@
+name: Entrenar Modelo (Manual)
+
+on:
+  workflow_dispatch: 
+
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+          
+      - run: pip install -r requirements.txt
+      
+      - name: Ejecutar auto_train.py
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: python auto_train.py
+        
+      - name: Subir cambios a GitHub
+        run: |
+          git config --global user.name "Bot de Entrenamiento"
+          git config --global user.email "bot@ejemplo.com"
+          git add dataset/ models/
+          git commit -m "Modelo reentrenado manualmente" || exit 0
+          git push

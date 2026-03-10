@@ -3,7 +3,7 @@ from firewall import analyze_prompt
 from supabase import create_client, Client
 import pandas as pd
 
-st.set_page_config(page_title="LLM Security Firewall", page_icon="🛡️", layout="centered")
+st.set_page_config(page_title="LLM Security Firewall", page_icon="🛡️", layout="centered", initial_sidebar_state="collapsed")
 
 @st.cache_resource
 def init_connection():
