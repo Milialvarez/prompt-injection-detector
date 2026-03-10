@@ -47,9 +47,9 @@ def main():
     df_nuevos["label"] = df_nuevos["label"].astype(int) 
     ruta_dataset = "dataset/prompts_multiclass.csv" 
     df_old = pd.read_csv(ruta_dataset)
-    
-    df_combined = pd.concat([df_old, df_nuevos[["prompt", "label", "category"]]], ignore_index=True)
-    df_combined = df_combined.drop_duplicates(subset=["prompt"])
+
+    df_nuevos_filtrados = df_nuevos[~df_nuevos['prompt'].isin(df_old['prompt'])]
+    df_combined = pd.concat([df_old, df_nuevos_filtrados[["prompt", "label", "category"]]], ignore_index=True)
     
     df_combined.to_csv(ruta_dataset, index=False)
     print(f"Dataset actualizado. Total de filas ahora: {len(df_combined)}.")
