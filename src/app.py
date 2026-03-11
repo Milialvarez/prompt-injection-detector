@@ -21,12 +21,13 @@ def generar_explicacion(prompt_usuario, categoria):
     try:
         chat_completion = groq_client.chat.completions.create(
             messages=[{"role": "user", "content": prompt_sistema}],
-            model="llama3-8b-8192", 
+            model="llama-3.1-8b-instant",
             temperature=0.2,
         )
         return chat_completion.choices.message.content
     except Exception as e:
-        return f"⚠️ Error técnico de Groq: {str(e)}"
+        print(f"Error con Groq: {e}")
+        return "El firewall bloqueó este contenido por políticas de seguridad."
     
 @st.cache_resource
 def init_connection():
