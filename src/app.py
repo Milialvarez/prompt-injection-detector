@@ -2,7 +2,7 @@ import streamlit as st
 from firewall import analyze_prompt
 from supabase import create_client, Client
 import pandas as pd
-from grow import Groq
+from groq import Groq
 
 groq_client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
