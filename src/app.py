@@ -2,8 +2,32 @@ import streamlit as st
 from firewall import analyze_prompt
 from supabase import create_client, Client
 import pandas as pd
+from grow import Groq
+
+groq_client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 st.set_page_config(page_title="LLM Security Firewall", page_icon="🛡️", layout="centered", initial_sidebar_state="collapsed")
+
+def generar_explicacion(prompt_usuario, categoria):
+    prompt_sistema = f"""
+    Eres un experto analista en ciberseguridad explicando bloqueos de un firewall de IA.
+    El usuario envió el mensaje: "{prompt_usuario}"
+    Nuestro modelo de seguridad lo clasificó como: "{categoria}".
+    
+    Tu tarea: Explica en máximo 3 o 4 líneas por qué este mensaje pertenece a esa categoría. 
+    Identifica y cita entre comillas las palabras clave o la intención exacta que activó la alerta.
+    Sé profesional, directo y no saludes.
+    """
+    try:
+        chat_completion = groq_client.chat.completions.create(
+            messages=[{"role": "user", "content": prompt_sistema}],
+            model="llama3-8b-8192", 
+            temperature=0.2,
+        )
+        return chat_completion.choices.message.content
+    except Exception as e:
+        print(f"Error con Groq: {e}")
+        return "El firewall bloqueó este contenido por políticas de seguridad."
 
 @st.cache_resource
 def init_connection():
@@ -49,8 +73,20 @@ if modo == "Firewall Público":
             if decision == "BLOCK":
                 st.error(f"**🚫 ACCIÓN BLOQUEADA**\n\nSe ha detectado un ataque de tipo: **{attack_type.upper()}**.")
                 st.progress(score)
+                
+                with st.spinner("Generando reporte de seguridad detallado..."):
+                    explicacion = generar_explicacion(user_input, attack_type)
+                    
+                st.info(f"**Análisis del Firewall:**\n\n{explicacion}")
+                
             elif decision == "FLAG":
                 st.warning(f"**⚠️ COMPORTAMIENTO SOSPECHOSO**\n\nPosible **{attack_type.upper()}**.")
+                
+                with st.spinner("Analizando sospecha..."):
+                    explicacion = generar_explicacion(user_input, attack_type)
+                    
+                st.info(f"**Motivo de la alerta:**\n\n{explicacion}")
+                
             else:
                 st.success("**✅ ACCIÓN PERMITIDA**\n\nEl prompt parece ser seguro y no presenta amenazas.")
 
