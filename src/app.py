@@ -24,9 +24,10 @@ def generar_explicacion(prompt_usuario, categoria):
             model="llama-3.1-8b-instant",
             temperature=0.2,
         )
-        return chat_completion.choices.message.content
+        return chat_completion.choices[0].message.content
     except Exception as e:
-        return f"⚠️ Error técnico de Groq: {str(e)}"
+        print(f"Error con Groq: {e}")
+        return "El firewall bloqueó este contenido por políticas de seguridad."
     
 @st.cache_resource
 def init_connection():
