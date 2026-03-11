@@ -26,9 +26,8 @@ def generar_explicacion(prompt_usuario, categoria):
         )
         return chat_completion.choices.message.content
     except Exception as e:
-        print(f"Error con Groq: {e}")
-        return "El firewall bloqueó este contenido por políticas de seguridad."
-
+        return f"⚠️ Error técnico de Groq: {str(e)}"
+    
 @st.cache_resource
 def init_connection():
     url = st.secrets["SUPABASE_URL"]
