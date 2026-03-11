@@ -3,10 +3,12 @@
 ![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![PyTorch](https://img.shields.io/badge/PyTorch-Deep%20Learning-EE4C2C.svg)
 ![Streamlit](https://img.shields.io/badge/Streamlit-Web%20App-FF4B4B.svg)
+![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E.svg)
+![Groq](https://img.shields.io/badge/Groq-Llama%203%20API-F55036.svg)
 
-An AI-powered firewall designed to detect and block malicious prompts (Prompt Injection, Jailbreaks, etc.) before they reach a Large Language Model (LLM).
+An AI-powered firewall designed to detect and block malicious prompts (Prompt Injection, Jailbreaks, Data Exfiltration, etc.) before they reach a Large Language Model (LLM). This system is not just a static classifier; it features **Explainable AI (XAI)** to justify its decisions and a **Human-in-the-Loop (HITL) MLOps pipeline** for continuous self-improvement.
 
-**[¡Prueba la aplicación en vivo aquí!](https://prompt-injection-detector.streamlit.app/)**
+**[¡Test the app here!](https://prompt-injection-detector.streamlit.app/)**
 
 ---
 
@@ -19,18 +21,31 @@ Can be used to bypass safety guardrails, exfiltrate private data, or manipulate 
 
 ---
 
-## Architecture
+## Architecture & Workflow
 
-
-The system works as an intermediary between the user and the LLM:
+The system works as an intelligent, evolving intermediary between the user and the LLM:
 
 1. **User Input:** The user submits a prompt via the **Streamlit** web interface.
 2. **Embeddings:** The text is converted into a semantic vector using `SentenceTransformers` (`all-MiniLM-L6-v2`).
-3. **Neural Classifier:** A custom PyTorch Multi-Class Neural Network evaluates the embedding.
-4. **Policy Engine:** Calculates a Threat Score and outputs a decision:
-   - **ALLOW** (Safe)
-   - **FLAG** (Suspicious)
-   - **BLOCK** (Malicious)
+3. **Neural Classifier:** A custom PyTorch Multi-Class Neural Network evaluates the embedding and outputs a Threat Score.
+4. **Explainable AI (LLM-as-a-Judge):** If a threat is detected, the prompt is routed to the **Groq API (Llama 3.1)** to generate a real-time, human-readable explanation of *why* the prompt was flagged, quoting the exact malicious intent.
+5. **Database Logging:** Every interaction (prompt, score, and predicted class) is securely logged into **Supabase**.
+
+---
+
+## Explainable AI (XAI)
+
+Security tools shouldn't be "black boxes". When the firewall blocks an action, it doesn't just return an error; it provides context. Powered by Groq's ultra-fast inference, the system analyzes the blocked prompt and explains the exact reasoning behind the security trigger, giving users and admins transparent insights.
+
+---
+
+## Human-in-the-Loop (HITL) & Continuous Learning
+
+Machine learning models degrade over time if they don't adapt to new data. This project implements a full MLOps pipeline to ensure the firewall gets smarter every day:
+
+* **Hidden Admin Panel:** A secure interface within the app where admins can review flagged prompts.
+* **Human Validation:** Admins can correct "false positives" (e.g., casual slang flagged as an attack) or confirm new threats.
+* **Automated Retraining:** Triggered via **GitHub Actions**, the system pulls the newly validated data from Supabase, updates the dataset, automatically recompiles/retrains the PyTorch model, and deploys the new brain to production without downtime.
 
 ---
 
@@ -38,14 +53,15 @@ The system works as an intermediary between the user and the LLM:
 
 - **Deep Learning:** PyTorch
 - **NLP / Embeddings:** Sentence-Transformers (`all-MiniLM-L6-v2`)
+- **Explainable AI (LLM):** Groq API (Llama 3.1 8B)
+- **Database & Logging:** Supabase (PostgreSQL)
+- **MLOps / CI-CD:** GitHub Actions
 - **Data Processing:** Pandas, Hugging Face Datasets
-- **Web Interface & Deployment:** Streamlit, Streamlit Community Cloud
-- **Security Testing:** Custom Fuzzer / Red Teaming Script
+- **Web Interface:** Streamlit, Streamlit Community Cloud
 
 ---
 
 ## Red Teaming & Attack Simulation (Fuzzing)
-
 
 To ensure the model doesn't just memorize strings but actually understands malicious intent, the project includes an advanced `attack_simulator.py`. 
 
